@@ -47,7 +47,7 @@ public class Employee extends org.hmcampoverde.entity.Entity {
     @Column(name = "employee_email_personal", nullable = true, length = 75)
     private String emailPersonal;
 
-    @Column(name = "employee_email_institucional", nullable = false, length = 75)
+    @Column(name = "employee_email_institutional", nullable = false, length = 75)
     private String emailInstitutional;
 
     @Column(name = "employee_address", nullable = false, columnDefinition = "TEXT")
