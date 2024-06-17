@@ -20,7 +20,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Entity
-@Table(name = "tbl_employee")
+@Table(name = "tbl_ticket")
 @Data
 @Builder
 @EqualsAndHashCode(callSuper = false)

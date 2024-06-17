@@ -16,14 +16,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "tbl_employee")
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Employee extends org.hmcampoverde.entity.Entity {
 
@@ -50,7 +55,7 @@ public class Employee extends org.hmcampoverde.entity.Entity {
     @Column(name = "employee_email_institutional", nullable = false, length = 75)
     private String emailInstitutional;
 
-    @Column(name = "employee_address", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "employee_address", nullable = true, columnDefinition = "TEXT")
     private String address;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
@@ -67,5 +72,12 @@ public class Employee extends org.hmcampoverde.entity.Entity {
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_EMPLOYEE_USER"), nullable = false)
     private User user;
+
+    @Transient
+    private String fullname;
+
+    public String getFullname() {
+        return this.firstname.concat(" ").concat(this.lastname);
+    }
 
 }

@@ -1,3 +1,8 @@
+security:
+  jwt:
+    secret-key: Bx4MeizkOfmx5buS0AeRdfWkK1H4GI8abShDqtZq6gA=
+    time:
+      expiration: 3600
 server:
   port: 80
 spring:
