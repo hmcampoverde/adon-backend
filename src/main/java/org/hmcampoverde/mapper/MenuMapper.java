@@ -10,12 +10,14 @@ import org.springframework.stereotype.Component;
 public class MenuMapper {
 
 	public MenuDto map(Menu menu) {
-		return new MenuDto(
-				menu.getId(),
-				menu.getName(),
-				menu.isLeft(),
-				menu.getUrl(),
-				menu.getIcon(),
-				Objects.nonNull(menu.getParent()) ? map(menu.getParent()) : null);
+		return MenuDto
+				.builder()
+				.id(menu.getId())
+				.name(menu.getName())
+				.left(menu.isLeft())
+				.url(menu.getUrl())
+				.icon(menu.getIcon())
+				.parent(Objects.nonNull(menu.getParent()) ? map(menu.getParent()) : null)
+				.build();
 	}
 }

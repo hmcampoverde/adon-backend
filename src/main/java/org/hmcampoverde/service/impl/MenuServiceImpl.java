@@ -3,7 +3,7 @@ package org.hmcampoverde.service.impl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+
 import org.hmcampoverde.dto.MenuDto;
 import org.hmcampoverde.mapper.MenuMapper;
 import org.hmcampoverde.repository.MenuRepository;
@@ -11,6 +11,8 @@ import org.hmcampoverde.service.MenuService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
@@ -24,10 +26,10 @@ public class MenuServiceImpl implements MenuService {
 	@Transactional(readOnly = true)
 	public List<MenuDto> findByRoles(String roles) {
 		return menuRepository
-			.findByRolesNameIn(getRoles(roles), Sort.by(Sort.Direction.ASC, "name"))
-			.stream()
-			.map(menuMapper::map)
-			.toList();
+				.findByRolesNameIn(getRoles(roles), Sort.by(Sort.Direction.ASC, "name"))
+				.stream()
+				.map(menuMapper::map)
+				.toList();
 	}
 
 	private List<String> getRoles(String strRoles) {
