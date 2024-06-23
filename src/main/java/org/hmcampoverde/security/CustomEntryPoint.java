@@ -38,7 +38,7 @@ public class CustomEntryPoint implements AuthenticationEntryPoint {
 						.builder()
 						.severity(Severity.ERROR.getDescription())
 						.summary(bundle.getValue("title.fatal"))
-						.detail(bundle.getValue("user.unauthorized"))
+						.detail(bundle.getValue("user.username.unauthorized"))
 						.build());
 	}
 }

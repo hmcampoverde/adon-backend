@@ -15,8 +15,9 @@ public class UserDto {
 
 	private String fullname;
 	private String username;
+	private String password;
 	@Size(max = 75, message = "input.exceeds.chars")
 	@NotEmpty(message = "{user.password.required}")
-	private String password;
+	private String newPassword;
 
 }

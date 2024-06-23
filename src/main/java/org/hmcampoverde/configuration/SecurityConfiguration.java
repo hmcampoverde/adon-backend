@@ -30,8 +30,12 @@ public class SecurityConfiguration {
 				.csrf(csrf -> csrf.disable())
 				.cors(cors -> cors.configurationSource(corsConfigurationSource))
 				.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.requestMatchers("/auth/**")
-						.permitAll().anyRequest().authenticated())
+				.authorizeHttpRequests(
+						authorizeHttpRequests -> authorizeHttpRequests
+								.requestMatchers("/auth/**", "/register/**")
+								.permitAll()
+								.anyRequest()
+								.authenticated())
 				.exceptionHandling(handling -> handling.authenticationEntryPoint(unauthorizedHandler))
 				.authenticationProvider(authProvider)
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

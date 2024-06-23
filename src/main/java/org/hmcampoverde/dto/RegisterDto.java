@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeRegisterDto {
+public class RegisterDto {
 
     private Long id;
 
@@ -33,6 +33,6 @@ public class EmployeeRegisterDto {
 
     @Size(max = 75, message = "input.exceeds.chars")
     @NotBlank(message = "{user.password.required}")
-    private String password;
+    private String newPassword;
 
 }

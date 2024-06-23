@@ -2,12 +2,10 @@ package org.hmcampoverde.controller;
 
 import java.text.ParseException;
 
-import org.hmcampoverde.dto.EmployeeRegisterDto;
 import org.hmcampoverde.dto.LoginDto;
 import org.hmcampoverde.dto.TokenDto;
 import org.hmcampoverde.dto.UserDto;
 import org.hmcampoverde.message.Message;
-import org.hmcampoverde.service.EmployeeService;
 import org.hmcampoverde.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
 	private final UserService userService;
-	private final EmployeeService employeeService;
 
 	@GetMapping("/findByUsername/{username}")
 	public ResponseEntity<UserDto> findByUsername(@PathVariable("username") String username) {
@@ -38,11 +35,6 @@ public class AuthController {
 	public ResponseEntity<Message> updatePasswordByUsername(@PathVariable("username") String username,
 			@Valid @RequestBody UserDto userDto) {
 		return ResponseEntity.ok().body(userService.updatePasswordByUsername(username, userDto));
-	}
-
-	@PostMapping("/register")
-	public ResponseEntity<Message> register(@Valid @RequestBody EmployeeRegisterDto employeeDto) {
-		return ResponseEntity.ok().body(employeeService.register(employeeDto));
 	}
 
 	@PostMapping("/login")
