@@ -27,66 +27,65 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RegisterServiceImpl implements RegisterService {
 
-        private final PasswordEncoder passwordEncoder;
-        private final EmployeeRepository employeeRepository;
-        private final RolRepository rolRepository;
-        private final BundleMessageHandler bundle;
+    private final PasswordEncoder passwordEncoder;
+    private final EmployeeRepository employeeRepository;
+    private final RolRepository rolRepository;
+    private final BundleMessageHandler bundle;
 
-        @Override
-        public Message register(RegisterDto registerDto) {
-                String identification = registerDto.getIdentification();
-                if (exists(null, identification)) {
-                        throw new CustomException(
-                                        bundle.getValue("employee.identification.duplicate",
-                                                        new Object[] { identification }),
-                                        HttpStatus.BAD_REQUEST);
-                }
-
-                Rol rol = findRolEmployee();
-                Set<Rol> roles = new HashSet<>();
-                roles.add(rolRepository.getReferenceById(rol.getId()));
-
-                User user = User
-                                .builder()
-                                .username(identification)
-                                .password(passwordEncoder.encode(registerDto.getNewPassword()))
-                                .roles(roles)
-                                .build();
-
-                Employee employee = Employee
-                                .builder()
-                                .firstname(registerDto.getFirstname())
-                                .lastname(registerDto.getLastname())
-                                .identification(registerDto.getIdentification())
-                                .emailInstitutional(registerDto.getEmailInstitutional())
-                                .profile(Profile.EMPLOYEE)
-                                .user(user)
-                                .build();
-
-                employeeRepository.save(employee);
-
-                return Message
-                                .builder()
-                                .severity("success")
-                                .summary(bundle.getValue("title.information"))
-                                .detail(bundle.getValue("employee.saved", new Object[] { identification }))
-                                .build();
+    @Override
+    public Message register(RegisterDto registerDto) {
+        String identification = registerDto.getIdentification();
+        if (exists(null, identification)) {
+            throw new CustomException(
+                    bundle.getValue("employee.identification.duplicate",
+                            new Object[] { identification }),
+                    HttpStatus.BAD_REQUEST);
         }
 
-        private boolean exists(Long id, String identification) {
-                Employee employee = employeeRepository.findByIdentification(identification).orElse(null);
+        Rol rol = findRolEmployee();
+        Set<Rol> roles = new HashSet<>();
+        roles.add(rolRepository.getReferenceById(rol.getId()));
 
-                return Objects.nonNull(employee) && !Objects.equals(employee.getId(), id);
-        }
+        User user = User
+                .builder()
+                .username(identification)
+                .password(passwordEncoder.encode(registerDto.getNewPassword()))
+                .roles(roles)
+                .build();
 
-        private Rol findRolEmployee() {
-                return rolRepository
-                                .findByNameIgnoreCase(Profile.EMPLOYEE.getDescription())
-                                .orElseThrow(() -> new CustomException(
-                                                bundle.getValue("employee.rol.notfound",
-                                                                new Object[] { Profile.EMPLOYEE }),
-                                                HttpStatus.BAD_REQUEST));
+        Employee employee = Employee
+                .builder()
+                .firstname(registerDto.getFirstname())
+                .lastname(registerDto.getLastname())
+                .identification(registerDto.getIdentification())
+                .emailInstitutional(registerDto.getEmailInstitutional())
+                .profile(Profile.EMPLOYEE)
+                .user(user)
+                .build();
 
-        }
+        employeeRepository.save(employee);
+
+        return Message
+                .builder()
+                .severity("success")
+                .summary(bundle.getValue("title.information"))
+                .detail(bundle.getValue("employee.saved", new Object[] { identification }))
+                .build();
+    }
+
+    private boolean exists(Long id, String identification) {
+        Employee employee = employeeRepository.findByIdentification(identification).orElse(null);
+
+        return Objects.nonNull(employee) && !Objects.equals(employee.getId(), id);
+    }
+
+    private Rol findRolEmployee() {
+        return rolRepository
+                .findByNameIgnoreCase(Profile.EMPLOYEE.getDescription())
+                .orElseThrow(() -> new CustomException(
+                        bundle.getValue("employee.rol.notfound", new Object[] { Profile.EMPLOYEE }),
+                        HttpStatus.BAD_REQUEST));
+
+    }
 
 }
