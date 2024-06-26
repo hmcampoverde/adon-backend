@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.hmcampoverde.message.BundleMessageHandler;
 import org.hmcampoverde.message.Message;
-import org.hmcampoverde.message.Severity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -36,7 +35,7 @@ public class CustomEntryPoint implements AuthenticationEntryPoint {
 				response.getOutputStream(),
 				Message
 						.builder()
-						.severity(Severity.ERROR.getDescription())
+						.severity("error")
 						.summary(bundle.getValue("title.fatal"))
 						.detail(bundle.getValue("user.username.unauthorized"))
 						.build());
