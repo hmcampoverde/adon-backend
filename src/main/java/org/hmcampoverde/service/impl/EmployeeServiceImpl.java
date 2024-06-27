@@ -1,3 +1,4 @@
+
 package org.hmcampoverde.service.impl;
 
 import java.util.HashSet;
@@ -16,9 +17,9 @@ import org.hmcampoverde.mapper.EmployeeMapper;
 import org.hmcampoverde.message.BundleMessageHandler;
 import org.hmcampoverde.message.Message;
 import org.hmcampoverde.repository.EmployeeRepository;
-import org.hmcampoverde.repository.RolRepository;
-import org.hmcampoverde.repository.UserRepository;
 import org.hmcampoverde.service.EmployeeService;
+import org.hmcampoverde.service.RolService;
+import org.hmcampoverde.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
+    private final RolService rolService;
+    private final UserService userService;
+
     private final EmployeeRepository employeeRepository;
-    private final UserRepository userRepository;
-    private final RolRepository rolRepository;
     private final EmployeeMapper employeeMapper;
     private final BundleMessageHandler bundle;
     private final PasswordEncoder passwordEncoder;
@@ -49,14 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDto findById(Long id) {
-        return employeeRepository
-                .findById(id)
-                .map(employeeMapper::map)
-                .orElseThrow(
-                        () -> new CustomException(
-                                bundle.getValue("exception.notfound", new Object[] { id }),
-                                HttpStatus.NOT_FOUND));
-
+        return employeeMapper.map(findByIdEmployee(id));
     }
 
     @Override
@@ -68,9 +63,9 @@ public class EmployeeServiceImpl implements EmployeeService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        Rol rol = findRolEmployee();
+        Rol rol = rolService.findByName(Profile.EMPLOYEE.getDescription());
         Set<Rol> roles = new HashSet<>();
-        roles.add(rolRepository.getReferenceById(rol.getId()));
+        roles.add(rolService.getReferenceById(rol.getId()));
 
         User user = User
                 .builder()
@@ -105,22 +100,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Message update(Long id, EmployeeDto employeeDto) {
         Employee employee;
-        String identification;
+        String identification = employeeDto.getIdentification();
 
-        employee = employeeRepository
-                .findById(id)
-                .orElseThrow(
-                        () -> new CustomException(
-                                bundle.getValue("exception.notfound", new Object[] { id }),
-                                HttpStatus.NOT_FOUND));
-
-        identification = employeeDto.getIdentification();
         if (exists(id, identification)) {
             throw new CustomException(
                     bundle.getValue("employee.identification.duplicate", new Object[] { identification }),
                     HttpStatus.BAD_REQUEST);
         }
 
+        employee = findByIdEmployee(id);
         employee.setFirstname(employeeDto.getFirstname());
         employee.setLastname(employeeDto.getLastname());
         employee.setIdentification(employeeDto.getIdentification());
@@ -141,23 +129,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Message delete(Long id) {
-        Employee employee = employeeRepository
-                .findById(id)
-                .orElseThrow(() -> new CustomException(
-                        bundle.getValue("exception.notfound", new Object[] { id }),
-                        HttpStatus.NOT_FOUND));
-
-        User user = userRepository
-                .findByUsername(employee.getIdentification())
-                .orElseThrow(() -> new CustomException(
-                        bundle.getValue("exception.notfound", new Object[] { employee.getIdentification() }),
-                        HttpStatus.NOT_FOUND));
+        Employee employee = findByIdEmployee(id);
 
         employee.setDeleted(Boolean.TRUE);
         employeeRepository.save(employee);
 
-        user.setDeleted(Boolean.TRUE);
-        userRepository.save(user);
+        userService.deleteByUsername(employee.getIdentification());
 
         return Message.builder()
                 .severity("success")
@@ -168,18 +145,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private boolean exists(Long id, String identification) {
         Employee employee = employeeRepository
-                .findByIdentification(identification).orElse(null);
+                .findByIdentification(identification)
+                .orElse(null);
 
         return Objects.nonNull(employee) && !Objects.equals(id, employee.getId());
     }
 
-    private Rol findRolEmployee() {
-        return rolRepository
-                .findByNameIgnoreCase(Profile.EMPLOYEE.getDescription())
-                .orElseThrow(() -> new CustomException(
-                        bundle.getValue("employee.rol.notfound", new Object[] { Profile.EMPLOYEE }),
-                        HttpStatus.BAD_REQUEST));
+    private Employee findByIdEmployee(Long id) {
+        if (Objects.isNull(id)) {
+            throw new CustomException(
+                    bundle.getValue("employee.id.notfound", new Object[] { id }),
+                    HttpStatus.BAD_REQUEST);
+        }
 
+        return employeeRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new CustomException(
+                                bundle.getValue("employee.id.notfound", new Object[] { id }),
+                                HttpStatus.NOT_FOUND));
     }
 
 }

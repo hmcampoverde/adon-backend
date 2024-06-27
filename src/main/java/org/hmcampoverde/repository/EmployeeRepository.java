@@ -15,6 +15,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findByIdentification(@Param("identification") String identification);
 
     @Query("select employee from Employee employee left join fetch employee.institution where employee.deleted = false")
-    public @NonNull List<Employee> findAll();
+    @NonNull
+    List<Employee> findAll();
 
 }

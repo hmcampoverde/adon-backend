@@ -39,7 +39,7 @@ public class EmployeeDto {
     @NotBlank(message = "{employee.emailInstitutional.required}")
     private String emailInstitutional;
 
-    @Size(max = 75, message = "{input.exceeds.chars}")
+    @Size(max = 100, message = "{input.exceeds.chars}")
     @NotBlank(message = "{employee.address.required}")
     private String address;
 

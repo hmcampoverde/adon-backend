@@ -13,7 +13,9 @@ public interface UserService {
 
 	public Message updatePasswordByUsername(String username, UserDto userDto);
 
-	TokenDto login(LoginDto login);
+	public Message deleteByUsername(String username);
 
-	TokenDto refresh(TokenDto toketDto) throws ParseException;
+	public TokenDto login(LoginDto login);
+
+	public TokenDto refresh(TokenDto toketDto) throws ParseException;
 }

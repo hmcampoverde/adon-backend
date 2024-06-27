@@ -13,8 +13,8 @@ import org.hmcampoverde.exception.CustomException;
 import org.hmcampoverde.message.BundleMessageHandler;
 import org.hmcampoverde.message.Message;
 import org.hmcampoverde.repository.EmployeeRepository;
-import org.hmcampoverde.repository.RolRepository;
 import org.hmcampoverde.service.RegisterService;
+import org.hmcampoverde.service.RolService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class RegisterServiceImpl implements RegisterService {
 
     private final PasswordEncoder passwordEncoder;
     private final EmployeeRepository employeeRepository;
-    private final RolRepository rolRepository;
+    private final RolService rolService;
     private final BundleMessageHandler bundle;
 
     @Override
@@ -37,14 +37,13 @@ public class RegisterServiceImpl implements RegisterService {
         String identification = registerDto.getIdentification();
         if (exists(null, identification)) {
             throw new CustomException(
-                    bundle.getValue("employee.identification.duplicate",
-                            new Object[] { identification }),
+                    bundle.getValue("employee.identification.duplicate", new Object[] { identification }),
                     HttpStatus.BAD_REQUEST);
         }
 
-        Rol rol = findRolEmployee();
+        Rol rol = rolService.findByName(identification);
         Set<Rol> roles = new HashSet<>();
-        roles.add(rolRepository.getReferenceById(rol.getId()));
+        roles.add(rolService.getReferenceById(rol.getId()));
 
         User user = User
                 .builder()
@@ -77,15 +76,6 @@ public class RegisterServiceImpl implements RegisterService {
         Employee employee = employeeRepository.findByIdentification(identification).orElse(null);
 
         return Objects.nonNull(employee) && !Objects.equals(employee.getId(), id);
-    }
-
-    private Rol findRolEmployee() {
-        return rolRepository
-                .findByNameIgnoreCase(Profile.EMPLOYEE.getDescription())
-                .orElseThrow(() -> new CustomException(
-                        bundle.getValue("employee.rol.notfound", new Object[] { Profile.EMPLOYEE }),
-                        HttpStatus.BAD_REQUEST));
-
     }
 
 }
