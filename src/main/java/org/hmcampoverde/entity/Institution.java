@@ -29,7 +29,7 @@ public class Institution extends org.hmcampoverde.entity.Entity {
     @Column(name = "institution_amie", nullable = false, length = 8)
     private String amie;
 
-    @Column(name = "institution_name", nullable = false, length = 75)
+    @Column(name = "institution_name", nullable = false, length = 100)
     private String name;
 
     @Column(name = "institution_phone", nullable = true, length = 16)
