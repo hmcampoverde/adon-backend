@@ -57,11 +57,11 @@ public class UserServiceImpl implements UserService {
         if (Objects.nonNull(userDto.getPassword())) {
 
             if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-                throw new CustomException(bundle.getValue("user.password.error"), HttpStatus.BAD_REQUEST);
+                throw new CustomException(bundle.getValue("user.password.unmatch"), HttpStatus.BAD_REQUEST);
             }
 
             if (passwordEncoder.matches(userDto.getNewPassword(), user.getPassword())) {
-                throw new CustomException(bundle.getValue("user.password.fail"), HttpStatus.BAD_REQUEST);
+                throw new CustomException(bundle.getValue("user.password.match"), HttpStatus.BAD_REQUEST);
             }
 
         }
@@ -79,6 +79,20 @@ public class UserServiceImpl implements UserService {
                 .severity("success")
                 .summary(bundle.getValue("title.information"))
                 .detail(bundle.getValue("user.update", new Object[] { username }))
+                .build();
+    }
+
+    @Override
+    public Message deleteByUsername(String username) {
+        User user = findUserByUsername(username);
+
+        user.setDeleted(Boolean.TRUE);
+        userRepository.save(user);
+
+        return Message.builder()
+                .severity("success")
+                .summary(bundle.getValue("title.information"))
+                .detail(bundle.getValue("user.deleted", new Object[] { username }))
                 .build();
     }
 
